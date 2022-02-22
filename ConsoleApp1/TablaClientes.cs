@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using ConsoleTables;
 
 namespace ConsoleApp1
 {
     public class TablaClientes: tbl_Igualdad
     {
-        public TablaClientes(int CantCajeros):base(CantCajeros)
+        public TablaClientes(int CantCajeros, int cantMaxMinutos) :base(CantCajeros)
         {
+            cantClientesMax = 1000;
             //Inicializar cantidad de cajeros y tiempos de llegada
 
             maxCantTiempoServicio = CantCajeros + 1;   //*2??     // Cant Tiempos de servicio + El Digito aleatorio 
@@ -18,14 +20,13 @@ namespace ConsoleApp1
             cajeros = new int[cantClientesMax, 6];              //
             #endregion
 
-            cantMaxMinutos = 60;
-            cantClientesMax = 100;
+            this.cantMaxMinutos = cantMaxMinutos;
+            Inicializacion();
         }
-        public void Inicializacion()
+        private void Inicializacion()
         {
             /// Cliente Llegadas
-            // 0 Cliente. 1 Digito Random Llegada.
-            // 2 Tiempo entre llegadas. 3 Minuto en que llego
+            // 0 Cliente.       1 Digito Random Llegada.      2 Tiempo entre llegadas.      3 Minuto en que llego
             //ClienteLlegada = new int[,] { { 1, 0, 0, 0 } };
             clienteLlegada = new int[100, 4];
             clienteLlegada[0, 0] = 1;
@@ -34,20 +35,14 @@ namespace ConsoleApp1
             clienteLlegada[0, 3] = 0;
 
             // Cajero Servicio Random
-            // 0 Digito Aleatorio.  1-2 Tiempo de servicio(1)
+            // 0 Digito Aleatorio.    1-2 Tiempo de servicio(1)
             tiempoServicio = new int[100, 3];
             
             // Cajero 
-            // 0 N. Caja.   1 Minuto que se atencio.    2.Tiempo espera.    3. Tiempo Termina
-            // 4. Tiempo que pasa en el sistema.    5. Tiempo inutil.
-            cajeros = new int[100,6];
-            // { { 1, 0, 0, 2, 2, 2 } }
-            //Cajeros[0, 0]=  1;      //Caja
-            //Cajeros[0, 1] = 0;      //Atendido
-            //Cajeros[0, 2] = 0;      //Espera
-            //Cajeros[0, 3] = 2;      //Termina
-            //Cajeros[0, 4] = 2;      //Tiempo en el sistema
-            //Cajeros[0, 5] = 0;      //Tiempo Inutil
+            cajeros = new int[100,6];// { { 1, 0, 0, 2, 2, 2 } }
+            //Cajeros
+            //[0, 0]//Caja.     [0, 1]//Atendido.       [0, 2]//Espera.     [0, 3]//Termina
+            //[0, 4]//Tiempo en el sistema.             [0, 5]//Tiempo Inutil
 
 
         }
@@ -97,15 +92,12 @@ namespace ConsoleApp1
         /// <param name="cliente"></param>
         private void tbl_Num_Cajas__2(ref Tabla_Cajas obj, ref int cliente)
         {
-            Random rand;
-            rand = new Random();
-            int num;
+            Random rand;        rand = new Random();            int num;
 
             tiempoServicio[cliente, 0] = num = rand.Next(1, 100);
 
             for (int i = 0; i < CantCajeros; i++)
             {
-                // obj.Cant_ServiciosCajero
                 for (int j = 0; j < obj.Cant_ServiciosCajero; j++)
                 {
                     if (num >= obj.Tbl_ServiciosCajeroDigitos[i, j, 1] && num <= obj.Tbl_ServiciosCajeroDigitos[i, j, 2])
@@ -139,12 +131,8 @@ namespace ConsoleApp1
 
                 cajeros[cliente, 4] = clienteLlegada[cliente, 3] + cajeros[cliente, 3]; // LlegadaCliente + CajeroTermina
                 cajeros[cliente, 5] = cajeros[cliente, 1];// 0 Inutil = Atendido - llego
-            
                 return;
             }
-
-            
-
             cajeros[cliente, 0] = 1;
 
             if (cajeros[cliente-1, 3] > clienteLlegada[cliente, 3])
@@ -157,13 +145,9 @@ namespace ConsoleApp1
                 cajeros[cliente, 5] =  clienteLlegada[cliente, 3] - cajeros[cliente - 1, 3];
                 cajeros[cliente, 2] = ZeroWait;
             }
-
-
             cajeros[cliente, 1] = clienteLlegada[cliente, 3] + cajeros[cliente, 2];  //Atendido
             cajeros[cliente, 3] = cajeros[cliente, 1] + tiempoServicio[cliente, cajaActual];  //Termina
             cajeros[cliente, 4] = cajeros[cliente, 3] - clienteLlegada[cliente, 3];  //Sistema
-
-
         }
         
         public void Modulados(ref Tabla_ServiciosLlegadas ObjServicios, ref Tabla_Cajas objCajas)
@@ -173,7 +157,6 @@ namespace ConsoleApp1
 
             int minutoAct = 0;
             cantMaxMinutos = 60;
-            //while (minutoAct < cantMaxMinutos)
             do
             {
                 tbl_ClienteLlegada__1(ref ObjServicios, ref cliente);
@@ -195,20 +178,41 @@ namespace ConsoleApp1
             //Console.WriteLine("0 Cliente | 1 Llegadas Random | 2 Tiempo entre llegadas | 3 MinLlego");
             //Console.WriteLine("4(0) Tiempo Servicio Random | 5(1) Cajero 1 | 6(2) Cajero 2");
 
+            Console.WriteLine("Tabla Cajeros/Servidores");
+            string xd = "|";        for (int i = 0; i < 12; i++)        xd += "{" + i + ", -10}|";
+            #region Formato
+            Console.WriteLine(xd,
+                "", "", "", "", "Digito", "", "", "", "", "", "-", "-");
+            Console.WriteLine(xd,
+                "", "", "", "", "Aleatorios", "",
+                "", "", "", "Minutos", "Tiempo que", "");
+            Console.WriteLine(xd,
+               " ", " ", "Tiempo", "Minuto en", "para los", "",
+               "", "Minuto en", "Tiempo de", "en que el ", "el cliente", "");
+
+            Console.WriteLine(xd,
+               " ", "Digitos", "entre", "el", "tiempos de", "Tiempo de",
+               "", "el ", "espera", "servicio", "pasa en", "Tiempo");
+
+            Console.WriteLine(xd, "Cliente", "Aleatorios", "llegadas", "que llego", "servicio 1", "servicio 1",
+                 "Cajero", "atendio", "en la fila", "termina", "el sistema", "Inutil");
+            Console.WriteLine("-------");
+            #endregion
+            
             while (cliente < totalCli)
             {
-                Console.Write($"{clienteLlegada[cliente, 0]} | {clienteLlegada[cliente, 1]} | {clienteLlegada[cliente, 2]} | {clienteLlegada[cliente, 3]} | ");
+                Console.Write("|{0,-10}|{1,-10}|{2,-10}|{3,-10}|",
+                    clienteLlegada[cliente, 0], clienteLlegada[cliente, 1], clienteLlegada[cliente, 2], clienteLlegada[cliente, 3]);
 
 
                 for (int i = 0; i < maxCantTiempoServicio; i++)
                 {
-                    Console.Write($"{tiempoServicio[cliente, i]} |");
+                    Console.Write("{0,-10}|", tiempoServicio[cliente, i]);
 
                 }
-                Console.Write("  **  ");
                 for (int i = 0; i < 6; i++)
                 {
-                    Console.Write($"{  cajeros[cliente, i]   } | ");
+                    Console.Write("{0,-10}|", cajeros[cliente, i]);
 
                 }
                 cliente++;

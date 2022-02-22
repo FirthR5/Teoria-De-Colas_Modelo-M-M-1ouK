@@ -38,14 +38,19 @@ namespace ConsoleApp1
 
         public void impresion()
         {
+            
             for (int i = 0; i < CantCajeros; i++)
             {
                 Console.WriteLine("Tabla Cajeros" + (i+1));
-                for (int j = 0; j < Cant_ServiciosCajero; j++)
+                if (i == 0)
                 {
-                    Console.WriteLine($"{tbl_ServiciosCajeroDigitos[i, j, 0]} {tbl_ServiciosCajeroDigitos[i, j, 1]} | {tbl_ServiciosCajeroDigitos[i, j, 2]}\n");
+                    Console.WriteLine("| {0, -20} | {1,-20} | {2,-20} |", "", "Asignacion", "Asignacion");
+                    Console.WriteLine("| {0, -20} | {1,-20} | {2,-20} |", "#. Llegada", "Digito inicial", "Digito Final");
                 }
-                Console.WriteLine("------\n");
+                for (int j = 0; j < Cant_ServiciosCajero; j++)
+                    Console.WriteLine("| {0, -20} | {1,-20} | {2,-20} |",tbl_ServiciosCajeroDigitos[i, j, 0], tbl_ServiciosCajeroDigitos[i, j, 1], tbl_ServiciosCajeroDigitos[i, j, 2]);
+                
+                Console.WriteLine("------\n\n");
             }
         }
         private bool[] estado;

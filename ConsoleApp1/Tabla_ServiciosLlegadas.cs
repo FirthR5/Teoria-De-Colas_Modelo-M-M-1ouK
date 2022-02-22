@@ -22,7 +22,6 @@ namespace ConsoleApp1
 
 
             // digitos que haya ingresado el usuario
-            // ToDo: For para ingresar los valores en el arreglo.
 
             for (int i = 0; i < cantTiemposLlegadas; i++, num1++)
             {
@@ -38,12 +37,19 @@ namespace ConsoleApp1
         }
         public void impresion()
         {
-           Console.WriteLine("Tabla Llegadas");
+            
+            Console.WriteLine("Tabla Llegadas");
+
+            Console.WriteLine("|{0, -20}|{1,-20}|{2,-20}|", "", "Asignacion", "Asignacion");
+            Console.WriteLine("|{0, -20}|{1,-20}|{2,-20}|", "#. Llegada", "Digito inicial", "Digito Final");
+
+
             for (int i = 0; i < cantTiemposLlegadas; i++)
             {
-                Console.WriteLine($"{tblLlegadaClientes[i, 0]} | {tblLlegadaClientes[i, 1]} {tblLlegadaClientes[i, 2]}\n");
+                Console.WriteLine("|{0,-20}|{1,-20}|{2,-20}|",tblLlegadaClientes[i, 0], tblLlegadaClientes[i, 1], tblLlegadaClientes[i, 2]);
                 //Console.WriteLine($"{i+1} | {tblLlegadaClientesProb[i,0]} {tblLlegadaClientesProb[i, 1]}\n\n");
             }
+            Console.WriteLine("\n\n");
         }
 
 
